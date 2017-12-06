@@ -279,6 +279,92 @@ void dodajZnajomego(vector<string>&znajomi) {
         }
     }
 }
+void podzialWpisuNaCzlony(string dzielonyNapis, vector<string>&podzielonyNapis) {
+    char znakSeparujacy = '|';
+    for(size_t p=0, q=0; p!=dzielonyNapis.npos; p=q) {
+        podzielonyNapis.push_back(dzielonyNapis.substr(p+(p!=0), (q=dzielonyNapis.find(znakSeparujacy, p+1))-p-(p!=0)));
+    }
+}
+void odswiezZawartoscPliku (vector<string>znajomi) {
+    fstream plik;
+    plik.open("AdressBook.txt",ios::in|ios::out|ios::trunc);
+
+    if (plik.good()==false) {
+        exit(0);
+    }
+    if (plik.good()) {
+        int iloscZnajomych=znajomi.size();
+        for(int i=0; i<iloscZnajomych; i++) {
+            plik<<znajomi[i]<<endl;
+        }
+    }
+    plik.close();
+}
+void edytowanieDanychZnajomego(vector<string>&znajomi) {
+    vector<string>znajomy;
+    cout<<"Podaj numer porzadkowy znajomego: ";
+    int numerPorzadkowy;
+    cin>>numerPorzadkowy;
+    string szukanyZnajomy=znajomi[numerPorzadkowy-1];
+    podzialWpisuNaCzlony(szukanyZnajomy,znajomy);
+
+    while(true) {
+        system("cls");
+        cout<<"Id: "<<znajomy[0]<<endl;
+        cout<<"Imie: "<<znajomy[1]<<endl;
+        cout<<"Nazwisko: "<<znajomy[2]<<endl;
+        cout<<"Numer telefonu: "<<znajomy[3]<<endl;
+        cout<<"Email: "<<znajomy[4]<<endl;
+        cout<<"Adres zamieszkania: "<<znajomy[5]<<endl;
+        cout<<endl<<"Co chcesz zmienic?"<<endl;
+
+        cout<<"1. Imie."<<endl;
+        cout<<"2. Nazwisko."<<endl;
+        cout<<"3. Numer telefonu."<<endl;
+        cout<<"4. Email."<<endl;
+        cout<<"5. Adres zamieszkania."<<endl;
+        cout<<"6. Zapisz zmiany."<<endl;
+        cout<<"7. Nie chce nic zmieniac."<<endl;
+        cout<<endl<<"Dokonaj wyboru podajac jego numer(1,2,3...):";
+        char wybor;
+        cin>>wybor;
+
+        if (wybor=='1') {
+            string imie;
+            cout<<"Podaj nowe imie: ";
+            cin>>imie;
+            znajomy[1]=imie;
+        } else if (wybor=='2') {
+            string nazwisko;
+            cout<<"Podaj nowe nazwisko: ";
+            cin>>nazwisko;
+            znajomy[2]=nazwisko;
+        } else if (wybor=='3') {
+            string nrTelefonu;
+            cout<<"Podaj nowy numer telefonu: ";
+            cin>>nrTelefonu;
+            znajomy[3]=nrTelefonu;
+        } else if (wybor=='4') {
+            string email;
+            cout<<"Podaj nowy email: ";
+            cin>>email;
+            znajomy[4]=email;
+        } else if (wybor=='5') {
+            string adresZamieszkania;
+            cout<<"Podaj nowy adres zamieszkania: ";
+            cin>>adresZamieszkania;
+            znajomy[5]=adresZamieszkania;
+        } else if (wybor=='6') {
+            string edytowanyZnajomy;
+            edytowanyZnajomy+=intNaString(numerPorzadkowy)+"|"+znajomy[1]+"|"+znajomy[2]+"|"+znajomy[3]+"|"+znajomy[4]+"|"+znajomy[5]+"|";
+            znajomi[numerPorzadkowy-1]=edytowanyZnajomy;
+            odswiezZawartoscPliku(znajomi);
+            return;
+        } else if (wybor=='7') {
+            return;
+        }
+    }
+}
 int main() {
     vector<string> znajomi;
     wczytajZnajomychZPliku(znajomi);
@@ -291,6 +377,7 @@ int main() {
         cout<<"2. Znajdz osobe o danym imieniu."<<endl;
         cout<<"3. Znajdz osobe o danym nazwisku."<<endl;
         cout<<"4. Wyswietl wszystkie osoby."<<endl;
+        cout<<"5. Edytuj dane znajomego."<<endl;
         cout<<"9. Zakoncz program."<<endl;
         cin>>wybor;
 
@@ -302,6 +389,8 @@ int main() {
             znajdzNazwisko(znajomi);
         } else if (wybor=='4') {
             wyswietlWszystkichZnajomych(znajomi);
+        } else if (wybor=='5') {
+            edytowanieDanychZnajomego(znajomi);
         } else if (wybor=='9') {
             exit(0);
         }
