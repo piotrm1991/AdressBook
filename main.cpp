@@ -3,26 +3,29 @@
 #include <fstream>
 #include <sstream>
 #include <conio.h>
+#include <vector>
+#include <map>
 
 using namespace std;
 
-struct Znajomy {
-    int idZnajomego;
-    string imie, nazwisko, numerTelefonu, email, adresZamieszkania;
-};
 int stringNaInt(string napisZmienianyNaInt) {
     int i;
     istringstream iss(napisZmienianyNaInt);
     iss >> i;
     return i;
 }
-int wczytajZnajomychZPliku(Znajomy znajomi[]) {
+string intNaString (int liczbaZamienianaNaString) {
+    ostringstream ss;
+    ss<<liczbaZamienianaNaString;
+    string str=ss.str();
+    return str;
+}
+void wczytajZnajomychZPliku(vector<string>&znajomi) {
     int nrLini=1;
     string linia;
-    int iloscZnajomych=0;
 
     fstream plik;
-    plik.open("KsiazkaAdresowa.txt",ios::in|ios::out|ios::app);
+    plik.open("AdressBook.txt",ios::in|ios::out|ios::app);
 
     if (plik.good()==false) {
         exit(0);
@@ -31,51 +34,123 @@ int wczytajZnajomychZPliku(Znajomy znajomi[]) {
     while(getline(plik,linia)) {
         switch(nrLini) {
         case 1:
-            znajomi[iloscZnajomych].idZnajomego=stringNaInt(linia);
-            break;
-        case 2:
-            znajomi[iloscZnajomych].imie=linia;
-            break;
-        case 3:
-            znajomi[iloscZnajomych].nazwisko = linia;
-            break;
-        case 4:
-            znajomi[iloscZnajomych].numerTelefonu = linia;
-            break;
-        case 5:
-            znajomi[iloscZnajomych].email = linia;
-            break;
-        case 6:
-            znajomi[iloscZnajomych].adresZamieszkania = linia;
+            znajomi.push_back(linia);
             break;
         }
 
-        if (nrLini==6) {
+        if (nrLini==1) {
             nrLini=0;
-            iloscZnajomych++;
         }
         nrLini++;
-
     }
     plik.close();
-    return iloscZnajomych;
 }
-void znajdzImie(Znajomy znajomi[], int iloscZnajomych) {
+void wypiszDaneZnajomego (string daneDoWypisania) {
+    int j=0;
+    cout<<"ID: ";
+    while(daneDoWypisania[j]!='|') {
+        cout<<daneDoWypisania[j];
+        j++;
+    }
+    j++;
+    cout<<endl<<"Imie: ";
+    while(daneDoWypisania[j]!='|') {
+        cout<<daneDoWypisania[j];
+        j++;
+    }
+    j++;
+    cout<<endl<<"Nazwisko: ";
+    while(daneDoWypisania[j]!='|') {
+        cout<<daneDoWypisania[j];
+        j++;
+    }
+    j++;
+    cout<<endl<<"Nr telefonu: ";
+    while(daneDoWypisania[j]!='|') {
+        cout<<daneDoWypisania[j];
+        j++;
+    }
+    j++;
+    cout<<endl<<"Email: ";
+    while(daneDoWypisania[j]!='|') {
+        cout<<daneDoWypisania[j];
+        j++;
+    }
+    j++;
+    cout<<endl<<"Adres zamieszkania: ";
+    while(daneDoWypisania[j]!='|') {
+        cout<<daneDoWypisania[j];
+        j++;
+    }
+    cout<<endl;
+}
+void zapisywanieImionWMapie(vector<string>znajomi, map<string,int>&imieOrazNumer) {
+    int iloscZnajomych=znajomi.size();
+    for (int i=0; i<iloscZnajomych; i++) {
+        int indeks=0;
+        string liczba;
+        string imie;
+        string znajomy=znajomi[i];
+        int j=0;
+        while (znajomy[j]!='|') {
+            liczba+=znajomy[j];
+            j++;
+        }
+        j++;
+        while (znajomy[j]!='|') {
+            imie+=znajomy[j];
+            j++;
+        }
+        indeks=stringNaInt(liczba)-1;
+        imieOrazNumer[imie]=indeks;
+    }
+}
+void zapisywanieNazwiskWMapie(vector<string>znajomi, map<string,int>&nazwiskoOrazNumer) {
+    int iloscZnajomych=znajomi.size();
+    for (int i=0; i<iloscZnajomych; i++) {
+        int indeks=0;
+        string liczba;
+        string nazwisko;
+        string znajomy=znajomi[i];
+        int j=0;
+        while (znajomy[j]!='|') {
+            liczba+=znajomy[j];
+            j++;
+        }
+        j++;
+        while (znajomy[j]!='|') {
+            j++;
+        }
+        j++;
+        while (znajomy[j]!='|') {
+            nazwisko+=znajomy[j];
+            j++;
+        }
+        indeks=stringNaInt(liczba)-1;
+        nazwiskoOrazNumer[nazwisko]=indeks;
+    }
+}
+bool szukajWMapie(map<string,int>przeszukiwanaMapa, string szukanyWyraz, int& numerSzukanegoWyrazu) {
+    map<string,int>::iterator itr=przeszukiwanaMapa.find(szukanyWyraz);
+    if(itr!=przeszukiwanaMapa.end()) {
+        numerSzukanegoWyrazu=itr->second;
+        return true;
+    }
+    return false;
+}
+void znajdzImie(vector<string>znajomi) {
     system("cls");
+    map<string,int>imieOrazNumer;
+    zapisywanieImionWMapie(znajomi,imieOrazNumer);
     string imie;
     cout<<"Podaj imie: ";
     cin>>imie;
-
-    system("cls");
-    for (int i=0; i<iloscZnajomych; i++) {
-        if (imie==znajomi[i].imie) {
-            cout<<"ID: "<<znajomi[i].idZnajomego<<endl;
-            cout<<"Imie: "<<znajomi[i].imie<<endl;
-            cout<<"Nazwisko: "<<znajomi[i].nazwisko<<endl;
-            cout<<"Nr telefonu: "<<znajomi[i].numerTelefonu<<endl;
-            cout<<"Email: "<<znajomi[i].email<<endl;
-            cout<<"Adres: "<<znajomi[i].adresZamieszkania<<endl<<endl<<endl;
-        }
+    int numerSzukanegoZnajomgo;
+    if ((szukajWMapie(imieOrazNumer,imie,numerSzukanegoZnajomgo)==false)) {
+        cout<<"Nie ma znajomego o takim imieniu w ksiazce adresowej."<<endl;
+    } else {
+        string znajomy=znajomi[numerSzukanegoZnajomgo];
+        wypiszDaneZnajomego(znajomy);
     }
     cout<<endl<<endl;
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
@@ -83,38 +158,34 @@ void znajdzImie(Znajomy znajomi[], int iloscZnajomych) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15);
     getch();
 }
-void znajdzNazwisko(Znajomy znajomi[], int iloscZnajomych) {
+void znajdzNazwisko(vector<string>znajomi) {
     system("cls");
+    map<string,int>nazwiskoOrazNumer;
+    zapisywanieNazwiskWMapie(znajomi,nazwiskoOrazNumer);
     string nazwisko;
     cout<<"Podaj nazwisko: ";
     cin>>nazwisko;
-
-    system("cls");
-    for (int i=0; i<iloscZnajomych; i++) {
-        if (nazwisko==znajomi[i].nazwisko) {
-            cout<<"ID: "<<znajomi[i].idZnajomego<<endl;
-            cout<<"Imie: "<<znajomi[i].imie<<endl;
-            cout<<"Nazwisko: "<<znajomi[i].nazwisko<<endl;
-            cout<<"Nr telefonu: "<<znajomi[i].numerTelefonu<<endl;
-            cout<<"Email: "<<znajomi[i].email<<endl;
-            cout<<"Adres: "<<znajomi[i].adresZamieszkania<<endl<<endl<<endl;
-        }
+    int numerSzukanegoZnajomgo;
+    if ((szukajWMapie(nazwiskoOrazNumer,nazwisko,numerSzukanegoZnajomgo)==false)) {
+        cout<<"Nie ma znajomego o takim nawisku w ksiazce adresowej."<<endl;
+    } else {
+        string znajomy=znajomi[numerSzukanegoZnajomgo];
+        wypiszDaneZnajomego(znajomy);
     }
     cout<<endl<<endl;
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
     cout<<"Wcisnij ENTER aby wrocic do glownego interfejsu."<<endl;
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15);
     getch();
+
 }
-void wyswietlWszystkichZnajomych(Znajomy znajomi[], int iloscZnajomych) {
+void wyswietlWszystkichZnajomych(vector<string>znajomi) {
     system("cls");
+    int iloscZnajomych=znajomi.size();
     for (int i=0; i<iloscZnajomych; i++) {
-        cout<<"ID: "<<znajomi[i].idZnajomego<<endl;
-        cout<<"Imie: "<<znajomi[i].imie<<endl;
-        cout<<"Nazwisko: "<<znajomi[i].nazwisko<<endl;
-        cout<<"Nr telefonu: "<<znajomi[i].numerTelefonu<<endl;
-        cout<<"Email: "<<znajomi[i].email<<endl;
-        cout<<"Adres: "<<znajomi[i].adresZamieszkania<<endl<<endl<<endl;
+        string znajomy=znajomi[i];
+        wypiszDaneZnajomego(znajomy);
+        cout<<"------------------------------------------------"<<endl;
     }
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
     cout<<"Wcisnij ENTER aby wrocic do glownego interfejsu."<<endl;
@@ -125,7 +196,7 @@ void sprawdzeniePliku() {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
     cout<<"---------------------------"<<endl<<endl;
     fstream plik;
-    plik.open("KsiazkaAdresowa.txt",ios::out|ios::app);
+    plik.open("AdressBook.txt",ios::out|ios::app);
 
     if (plik.good()==false) {
         cout<<"Nie udalo sie otworzyc pliku!"<<endl<<endl;
@@ -136,58 +207,54 @@ void sprawdzeniePliku() {
     cout<<"---------------------------"<<endl;
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15);
 }
-void zapisNowegoZnajomego(Znajomy znajomi[], int iloscZnajomych, Znajomy daneDoZapisu) {
-    znajomi[iloscZnajomych].idZnajomego=daneDoZapisu.idZnajomego;
-    znajomi[iloscZnajomych].imie=daneDoZapisu.imie;
-    znajomi[iloscZnajomych].nazwisko=daneDoZapisu.nazwisko;
-    znajomi[iloscZnajomych].numerTelefonu=daneDoZapisu.numerTelefonu;
-    znajomi[iloscZnajomych].email=daneDoZapisu.email;
-    znajomi[iloscZnajomych].adresZamieszkania=daneDoZapisu.adresZamieszkania;
+void zapisNowegoZnajomego(vector<string>& znajomi, string znajomy) {
+    znajomi.push_back(znajomy);
 
     fstream plik;
-    plik.open("KsiazkaAdresowa.txt", ios::out|ios::app);
+    plik.open("AdressBook.txt", ios::out|ios::app);
     if (plik.good()) {
-        plik<<daneDoZapisu.idZnajomego<<endl;
-        plik<<daneDoZapisu.imie<<endl;
-        plik<<daneDoZapisu.nazwisko<<endl;
-        plik<<daneDoZapisu.numerTelefonu<<endl;
-        plik<<daneDoZapisu.email<<endl;
-        plik<<daneDoZapisu.adresZamieszkania<<endl;
+        plik<<znajomy<<endl;
 
         plik.close();
 
         cout<<"Dane osoby zostaly zapisane."<<endl;
         Sleep(1000);
     } else {
-        cout<<"Nie mozna otworzyc pliku: KsiazkaAdresowa.txt"<<endl;
+        cout<<"Nie mozna otworzyc pliku: AdressBook.txt"<<endl;
         system("pause");
     }
 }
-int dodajZnajomego(Znajomy znajomi[], int iloscZnajomych, Znajomy daneDoZapisu) {
+void dodajZnajomego(vector<string>&znajomi) {
     system("cls");
+    int iloscZnajomych=znajomi.size();
+    int idZnajomego;
+    string imie, nazwisko, numerTelefonu, email, adresZamieszkania;
+    string znajomy;
     cout<<"Dodawanie nowej osoby do ksiazki adresowej."<<endl;
     cout<<"Podaj imie: ";
-    cin>>daneDoZapisu.imie;
+    cin>>imie;
     cout<<"Podaj nazwisko: ";
-    cin>>daneDoZapisu.nazwisko;
+    cin>>nazwisko;
     cout<<"Podaj numer telefonu: ";
     cin.sync();
-    getline(cin, daneDoZapisu.numerTelefonu);
+    getline(cin, numerTelefonu);
     cout<<"Podaj email: ";
-    cin>>daneDoZapisu.email;
+    cin>>email;
     cout<<"Podaj adres: ";
     cin.sync();
-    getline(cin, daneDoZapisu.adresZamieszkania);
+    getline(cin, adresZamieszkania);
 
-    daneDoZapisu.idZnajomego=iloscZnajomych+1;
+    idZnajomego=iloscZnajomych+1;
 
     system("cls");
-    cout<<"ID: "<<daneDoZapisu.idZnajomego<<endl;
-    cout<<"Imie: "<<daneDoZapisu.imie<<endl;
-    cout<<"Nazwisko: "<<daneDoZapisu.nazwisko<<endl;
-    cout<<"Nr telefonu: "<<daneDoZapisu.numerTelefonu<<endl;
-    cout<<"Email: "<<daneDoZapisu.email<<endl;
-    cout<<"Adres: "<<daneDoZapisu.adresZamieszkania<<endl<<endl;
+    cout<<"ID: "<<idZnajomego<<endl;
+    cout<<"Imie: "<<imie<<endl;
+    cout<<"Nazwisko: "<<nazwisko<<endl;
+    cout<<"Nr telefonu: "<<numerTelefonu<<endl;
+    cout<<"Email: "<<email<<endl;
+    cout<<"Adres: "<<adresZamieszkania<<endl<<endl;
+
+    znajomy+=intNaString(idZnajomego)+"|"+imie+"|"+nazwisko+"|"+numerTelefonu+"|"+email+"|"+adresZamieszkania+"|";
 
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
     cout<<"Czy chcesz zapisac tego znajomego w Ksiazce Adresowwj?(t/n)"<<endl;
@@ -196,18 +263,16 @@ int dodajZnajomego(Znajomy znajomi[], int iloscZnajomych, Znajomy daneDoZapisu) 
     while(true) {
         cin>>wybor;
         if (wybor=='t') {
-            zapisNowegoZnajomego(znajomi,iloscZnajomych, daneDoZapisu);
-            iloscZnajomych++;
-            return iloscZnajomych;
+            zapisNowegoZnajomego(znajomi, znajomy);
+            return;
         } else if(wybor=='n') {
-            return iloscZnajomych;
+            return;
         }
     }
 }
 int main() {
-    Znajomy znajomi[1000];
-    Znajomy daneDoZapisu;
-    int iloscZnajomych=wczytajZnajomychZPliku(znajomi);
+    vector<string> znajomi;
+    wczytajZnajomychZPliku(znajomi);
     char wybor;
 
     while(true) {
@@ -221,13 +286,13 @@ int main() {
         cin>>wybor;
 
         if (wybor=='1') {
-            iloscZnajomych=dodajZnajomego(znajomi, iloscZnajomych, daneDoZapisu);
+            dodajZnajomego(znajomi);
         } else if (wybor=='2') {
-            znajdzImie(znajomi, iloscZnajomych);
+            znajdzImie(znajomi);
         } else if (wybor=='3') {
-            znajdzNazwisko(znajomi, iloscZnajomych);
+            znajdzNazwisko(znajomi);
         } else if (wybor=='4') {
-            wyswietlWszystkichZnajomych(znajomi, iloscZnajomych);
+            wyswietlWszystkichZnajomych(znajomi);
         } else if (wybor=='9') {
             exit(0);
         }
