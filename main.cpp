@@ -14,6 +14,13 @@ int stringNaInt(string napisZmienianyNaInt) {
     iss >> i;
     return i;
 }
+char zamienNaMalaJesliTrzeba (char znakDoKonwersji) {
+    char znakPoKonwersji=znakDoKonwersji;
+    if(not islower(znakDoKonwersji)) {
+        znakPoKonwersji=tolower(znakDoKonwersji);
+    }
+    return znakPoKonwersji;
+}
 string intNaString (int liczbaZamienianaNaString) {
     ostringstream ss;
     ss<<liczbaZamienianaNaString;
@@ -259,9 +266,11 @@ void dodajZnajomego(vector<string>&znajomi) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
     cout<<"Czy chcesz zapisac tego znajomego w Ksiazce Adresowwj?(t/n)"<<endl;
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15);
-    char wybor;
+    char wprowadzonaOdpowiedz;
     while(true) {
-        cin>>wybor;
+        char wybor;
+        cin>>wprowadzonaOdpowiedz;
+        wybor=zamienNaMalaJesliTrzeba(wprowadzonaOdpowiedz);
         if (wybor=='t') {
             zapisNowegoZnajomego(znajomi, znajomy);
             return;
