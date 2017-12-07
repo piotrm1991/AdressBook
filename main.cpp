@@ -27,6 +27,12 @@ string intNaString (int liczbaZamienianaNaString) {
     string str=ss.str();
     return str;
 }
+void podzialWpisuNaCzlony(string dzielonyNapis, vector<string>&podzielonyNapis) {
+    char znakSeparujacy = '|';
+    for(size_t p=0, q=0; p!=dzielonyNapis.npos; p=q) {
+        podzielonyNapis.push_back(dzielonyNapis.substr(p+(p!=0), (q=dzielonyNapis.find(znakSeparujacy, p+1))-p-(p!=0)));
+    }
+}
 void wczytajZnajomychZPliku(vector<string>&znajomi) {
     int nrLini=1;
     string linia;
@@ -53,43 +59,14 @@ void wczytajZnajomychZPliku(vector<string>&znajomi) {
     plik.close();
 }
 void wypiszDaneZnajomego (string daneDoWypisania) {
-    int j=0;
-    cout<<"ID: ";
-    while(daneDoWypisania[j]!='|') {
-        cout<<daneDoWypisania[j];
-        j++;
-    }
-    j++;
-    cout<<endl<<"Imie: ";
-    while(daneDoWypisania[j]!='|') {
-        cout<<daneDoWypisania[j];
-        j++;
-    }
-    j++;
-    cout<<endl<<"Nazwisko: ";
-    while(daneDoWypisania[j]!='|') {
-        cout<<daneDoWypisania[j];
-        j++;
-    }
-    j++;
-    cout<<endl<<"Nr telefonu: ";
-    while(daneDoWypisania[j]!='|') {
-        cout<<daneDoWypisania[j];
-        j++;
-    }
-    j++;
-    cout<<endl<<"Email: ";
-    while(daneDoWypisania[j]!='|') {
-        cout<<daneDoWypisania[j];
-        j++;
-    }
-    j++;
-    cout<<endl<<"Adres zamieszkania: ";
-    while(daneDoWypisania[j]!='|') {
-        cout<<daneDoWypisania[j];
-        j++;
-    }
-    cout<<endl;
+    vector<string>znajomy;
+    podzialWpisuNaCzlony(daneDoWypisania,znajomy);
+    cout<<"Id: "<<znajomy[0]<<endl;
+    cout<<"Imie: "<<znajomy[1]<<endl;
+    cout<<"Nazwisko: "<<znajomy[2]<<endl;
+    cout<<"Numer telefonu: "<<znajomy[3]<<endl;
+    cout<<"Email: "<<znajomy[4]<<endl;
+    cout<<"Adres zamieszkania: "<<znajomy[5]<<endl;
 }
 void zapisywanieImionWMapie(vector<string>znajomi, map<string,int>&imieOrazNumer) {
     int iloscZnajomych=znajomi.size();
@@ -276,12 +253,6 @@ void dodajZnajomego(vector<string>&znajomi) {
         }
     }
 }
-void podzialWpisuNaCzlony(string dzielonyNapis, vector<string>&podzielonyNapis) {
-    char znakSeparujacy = '|';
-    for(size_t p=0, q=0; p!=dzielonyNapis.npos; p=q) {
-        podzielonyNapis.push_back(dzielonyNapis.substr(p+(p!=0), (q=dzielonyNapis.find(znakSeparujacy, p+1))-p-(p!=0)));
-    }
-}
 void odswiezZawartoscPliku (vector<string>znajomi) {
     fstream plik;
     plik.open("AdressBook.txt",ios::in|ios::out|ios::trunc);
@@ -385,6 +356,7 @@ void ukladanieWetora (vector<string>&znajomi) {
     }
 }
 void usuwanieDanychOsoby(vector<string>&znajomi) {
+    system("cls");
     int numerPorzadkowy;
     cout<<"Podaj numer porzadkowy znajomego, ktorego dane chcesz usunac: ";
     cin>>numerPorzadkowy;
