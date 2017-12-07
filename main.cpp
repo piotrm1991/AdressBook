@@ -156,8 +156,7 @@ void znajdzImie(vector<string>znajomi) {
     if ((szukajWMapie(imieOrazNumer,imie,numerSzukanegoZnajomgo)==false)) {
         cout<<"Nie ma znajomego o takim imieniu w ksiazce adresowej."<<endl;
     } else {
-        string znajomy=znajomi[numerSzukanegoZnajomgo];
-        wypiszDaneZnajomego(znajomy);
+        wypiszDaneZnajomego(znajomi[numerSzukanegoZnajomgo]);
     }
     cout<<endl<<endl;
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
@@ -176,8 +175,7 @@ void znajdzNazwisko(vector<string>znajomi) {
     if ((szukajWMapie(nazwiskoOrazNumer,nazwisko,numerSzukanegoZnajomgo)==false)) {
         cout<<"Nie ma znajomego o takim nawisku w ksiazce adresowej."<<endl;
     } else {
-        string znajomy=znajomi[numerSzukanegoZnajomgo];
-        wypiszDaneZnajomego(znajomy);
+        wypiszDaneZnajomego(znajomi[numerSzukanegoZnajomgo]);
     }
     cout<<endl<<endl;
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
@@ -190,8 +188,7 @@ void wyswietlWszystkichZnajomych(vector<string>znajomi) {
     system("cls");
     int iloscZnajomych=znajomi.size();
     for (int i=0; i<iloscZnajomych; i++) {
-        string znajomy=znajomi[i];
-        wypiszDaneZnajomego(znajomy);
+        wypiszDaneZnajomego(znajomi[i]);
         cout<<"------------------------------------------------"<<endl;
     }
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
@@ -365,6 +362,54 @@ void edytowanieDanychZnajomego(vector<string>&znajomi) {
         }
     }
 }
+void usuwanieIdZWektora(vector<string>znajomi, vector<string>&znajomiBezID) {
+    int iloscZnajomych=znajomi.size();
+    for(int i=0; i<iloscZnajomych; i++) {
+        string znajomy=znajomi[i];
+        int ileUsunac=0;
+        do {
+            ileUsunac++;
+        } while(znajomy[ileUsunac]!='|');
+        znajomy.erase(0,ileUsunac);
+        znajomiBezID.push_back(znajomy);
+    }
+}
+void ukladanieWetora (vector<string>&znajomi) {
+    vector<string>znajomiBezID;
+    usuwanieIdZWektora(znajomi,znajomiBezID);
+    int iloscZnajomych=znajomi.size();
+    for(int i=0; i<iloscZnajomych; i++) {
+        string znajomy;
+        znajomy+=intNaString(i+1)+znajomiBezID[i];
+        znajomi[i]=znajomy;
+    }
+}
+void usuwanieDanychOsoby(vector<string>&znajomi) {
+    int numerPorzadkowy;
+    cout<<"Podaj numer porzadkowy znajomego, ktorego dane chcesz usunac: ";
+    cin>>numerPorzadkowy;
+    wypiszDaneZnajomego(znajomi[numerPorzadkowy-1]);
+
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
+    cout<<"Czy na pewno chcesz usunac dane tego znajomego?(t/n)"<<endl;
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15);
+    char wprowadzonaOdpowiedz;
+    while(true) {
+        char wybor;
+        cin>>wprowadzonaOdpowiedz;
+        wybor=zamienNaMalaJesliTrzeba(wprowadzonaOdpowiedz);
+        if (wybor=='t') {
+            znajomi.erase(znajomi.begin()+numerPorzadkowy-1);
+            ukladanieWetora(znajomi);
+            odswiezZawartoscPliku(znajomi);
+            cout<<"Dane osoby zostaly usuniete."<<endl;
+            Sleep(1000);
+            return;
+        } else if(wybor=='n') {
+            return;
+        }
+    }
+}
 int main() {
     vector<string> znajomi;
     wczytajZnajomychZPliku(znajomi);
@@ -378,6 +423,7 @@ int main() {
         cout<<"3. Znajdz osobe o danym nazwisku."<<endl;
         cout<<"4. Wyswietl wszystkie osoby."<<endl;
         cout<<"5. Edytuj dane znajomego."<<endl;
+        cout<<"6. Usun dane znajomego."<<endl;
         cout<<"9. Zakoncz program."<<endl;
         cin>>wybor;
 
@@ -391,6 +437,8 @@ int main() {
             wyswietlWszystkichZnajomych(znajomi);
         } else if (wybor=='5') {
             edytowanieDanychZnajomego(znajomi);
+        } else if (wybor=='6') {
+            usuwanieDanychOsoby(znajomi);
         } else if (wybor=='9') {
             exit(0);
         }
