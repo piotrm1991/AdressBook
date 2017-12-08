@@ -131,7 +131,7 @@ void znajdzImie(vector<string>znajomi) {
     cin>>imie;
     int numerSzukanegoZnajomgo;
     if ((szukajWMapie(imieOrazNumer,imie,numerSzukanegoZnajomgo)==false)) {
-        cout<<"Nie ma znajomego o takim imieniu w ksiazce adresowej."<<endl;
+        cout<<"Nie ma adresata o takim imieniu w ksiazce adresowej."<<endl;
     } else {
         wypiszDaneZnajomego(znajomi[numerSzukanegoZnajomgo]);
     }
@@ -150,7 +150,7 @@ void znajdzNazwisko(vector<string>znajomi) {
     cin>>nazwisko;
     int numerSzukanegoZnajomgo;
     if ((szukajWMapie(nazwiskoOrazNumer,nazwisko,numerSzukanegoZnajomgo)==false)) {
-        cout<<"Nie ma znajomego o takim nawisku w ksiazce adresowej."<<endl;
+        cout<<"Nie ma adresata o takim nawisku w ksiazce adresowej."<<endl;
     } else {
         wypiszDaneZnajomego(znajomi[numerSzukanegoZnajomgo]);
     }
@@ -198,7 +198,7 @@ void zapisNowegoZnajomego(vector<string>& znajomi, string znajomy) {
 
         plik.close();
 
-        cout<<"Dane osoby zostaly zapisane."<<endl;
+        cout<<"Dane adresata zostaly zapisane."<<endl;
         Sleep(1000);
     } else {
         cout<<"Nie mozna otworzyc pliku: AdressBook.txt"<<endl;
@@ -211,7 +211,7 @@ void dodajZnajomego(vector<string>&znajomi) {
     int idZnajomego;
     string imie, nazwisko, numerTelefonu, email, adresZamieszkania;
     string znajomy;
-    cout<<"Dodawanie nowej osoby do ksiazki adresowej."<<endl;
+    cout<<"Dodawanie nowej adresu do ksiazki adresowej."<<endl;
     cout<<"Podaj imie: ";
     cin>>imie;
     cout<<"Podaj nazwisko: ";
@@ -238,18 +238,24 @@ void dodajZnajomego(vector<string>&znajomi) {
     znajomy+=intNaString(idZnajomego)+"|"+imie+"|"+nazwisko+"|"+numerTelefonu+"|"+email+"|"+adresZamieszkania+"|";
 
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
-    cout<<"Czy chcesz zapisac tego znajomego w Ksiazce Adresowwj?(t/n)"<<endl;
+    cout<<"Czy chcesz zapisac ten adres w Ksiazce Adresowwj?(t/n)"<<endl;
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15);
     char wprowadzonaOdpowiedz;
     while(true) {
         char wybor;
         cin>>wprowadzonaOdpowiedz;
         wybor=zamienNaMalaJesliTrzeba(wprowadzonaOdpowiedz);
-        if (wybor=='t') {
+
+        switch (wybor) {
+        case't': {
             zapisNowegoZnajomego(znajomi, znajomy);
             return;
-        } else if(wybor=='n') {
+        }
+        break;
+        case'n': {
             return;
+        }
+        break;
         }
     }
 }
@@ -271,10 +277,11 @@ void odswiezZawartoscPliku (vector<string>znajomi) {
 void edytowanieDanychZnajomego(vector<string>&znajomi) {
     system("cls");
     vector<string>znajomy;
-    cout<<"Podaj numer porzadkowy znajomego: ";
+    cout<<"Podaj numer porzadkowy adresata: ";
     int numerPorzadkowy;
     cin>>numerPorzadkowy;
-    if (numerPorzadkowy>znajomi.size()) {
+    int iloscZnajomych=znajomi.size();
+    if (numerPorzadkowy>iloscZnajomych) {
         cout<<"Taki adresat nie istnieje."<<endl;
         Sleep(1000);
         cout<<"Powrot do glownego menu."<<endl;
@@ -305,39 +312,54 @@ void edytowanieDanychZnajomego(vector<string>&znajomi) {
             char wybor;
             cin>>wybor;
 
-            if (wybor=='1') {
+            switch (wybor) {
+            case '1': {
                 string imie;
                 cout<<"Podaj nowe imie: ";
                 cin>>imie;
                 znajomy[1]=imie;
-            } else if (wybor=='2') {
+            }
+            break;
+            case '2': {
                 string nazwisko;
                 cout<<"Podaj nowe nazwisko: ";
                 cin>>nazwisko;
                 znajomy[2]=nazwisko;
-            } else if (wybor=='3') {
+            }
+            break;
+            case '3': {
                 string nrTelefonu;
                 cout<<"Podaj nowy numer telefonu: ";
                 cin>>nrTelefonu;
                 znajomy[3]=nrTelefonu;
-            } else if (wybor=='4') {
+            }
+            break;
+            case '4': {
                 string email;
                 cout<<"Podaj nowy email: ";
                 cin>>email;
                 znajomy[4]=email;
-            } else if (wybor=='5') {
+            }
+            break;
+            case '5': {
                 string adresZamieszkania;
                 cout<<"Podaj nowy adres zamieszkania: ";
                 cin>>adresZamieszkania;
                 znajomy[5]=adresZamieszkania;
-            } else if (wybor=='6') {
+            }
+            break;
+            case '6': {
                 string edytowanyZnajomy;
                 edytowanyZnajomy+=intNaString(numerPorzadkowy)+"|"+znajomy[1]+"|"+znajomy[2]+"|"+znajomy[3]+"|"+znajomy[4]+"|"+znajomy[5]+"|";
                 znajomi[numerPorzadkowy-1]=edytowanyZnajomy;
                 odswiezZawartoscPliku(znajomi);
                 return;
-            } else if (wybor=='7') {
+            }
+            break;
+            case '7': {
                 return;
+            }
+            break;
             }
         }
     }
@@ -367,9 +389,10 @@ void ukladanieWetora (vector<string>&znajomi) {
 void usuwanieDanychOsoby(vector<string>&znajomi) {
     system("cls");
     int numerPorzadkowy;
-    cout<<"Podaj numer porzadkowy znajomego, ktorego dane chcesz usunac: ";
+    cout<<"Podaj numer porzadkowy adresata, ktorego dane chcesz usunac: ";
     cin>>numerPorzadkowy;
-    if (numerPorzadkowy>znajomi.size()) {
+    int iloscZnajomych=znajomi.size();
+    if (numerPorzadkowy>iloscZnajomych) {
         cout<<"Taki adresat nie istnieje."<<endl;
         Sleep(1000);
         cout<<"Powrot do glownego menu."<<endl;
@@ -379,22 +402,28 @@ void usuwanieDanychOsoby(vector<string>&znajomi) {
         wypiszDaneZnajomego(znajomi[numerPorzadkowy-1]);
 
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
-        cout<<"Czy na pewno chcesz usunac dane tego znajomego?(t/n)"<<endl;
+        cout<<"Czy na pewno chcesz usunac dane tego adresata?(t/n)"<<endl;
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),15);
         char wprowadzonaOdpowiedz;
         while(true) {
             char wybor;
             cin>>wprowadzonaOdpowiedz;
             wybor=zamienNaMalaJesliTrzeba(wprowadzonaOdpowiedz);
-            if (wybor=='t') {
+
+            switch (wybor) {
+            case 't': {
                 znajomi.erase(znajomi.begin()+numerPorzadkowy-1);
                 ukladanieWetora(znajomi);
                 odswiezZawartoscPliku(znajomi);
-                cout<<"Dane osoby zostaly usuniete."<<endl;
+                cout<<"Dane adresata zostaly usuniete."<<endl;
                 Sleep(1000);
                 return;
-            } else if(wybor=='n') {
+            }
+            break;
+            case 'n': {
                 return;
+            }
+            break;
             }
         }
     }
@@ -407,29 +436,44 @@ int main() {
     while(true) {
         system("cls");
         sprawdzeniePliku();
-        cout<<"1. Wprowadz dane nowej osoby."<<endl;
-        cout<<"2. Znajdz osobe o danym imieniu."<<endl;
-        cout<<"3. Znajdz osobe o danym nazwisku."<<endl;
-        cout<<"4. Wyswietl wszystkie osoby."<<endl;
-        cout<<"5. Edytuj dane znajomego."<<endl;
-        cout<<"6. Usun dane znajomego."<<endl;
+        cout<<"1. Wprowadz nowy adres."<<endl;
+        cout<<"2. Znajdz adresata o danym imieniu."<<endl;
+        cout<<"3. Znajdz adresata o danym nazwisku."<<endl;
+        cout<<"4. Wyswietl wszystkie adresy."<<endl;
+        cout<<"5. Edytuj dane adresata."<<endl;
+        cout<<"6. Usun dane adresata."<<endl;
         cout<<"9. Zakoncz program."<<endl;
         cin>>wybor;
 
-        if (wybor=='1') {
+        switch (wybor) {
+        case'1': {
             dodajZnajomego(znajomi);
-        } else if (wybor=='2') {
+        }
+        break;
+        case'2': {
             znajdzImie(znajomi);
-        } else if (wybor=='3') {
+        }
+        break;
+        case'3': {
             znajdzNazwisko(znajomi);
-        } else if (wybor=='4') {
+        }
+        break;
+        case'4': {
             wyswietlWszystkichZnajomych(znajomi);
-        } else if (wybor=='5') {
+        }
+        break;
+        case'5': {
             edytowanieDanychZnajomego(znajomi);
-        } else if (wybor=='6') {
+        }
+        break;
+        case'6': {
             usuwanieDanychOsoby(znajomi);
-        } else if (wybor=='9') {
+        }
+        break;
+        case'9': {
             exit(0);
+        }
+        break;
         }
     }
     return 0;
