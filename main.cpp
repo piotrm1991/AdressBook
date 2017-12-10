@@ -27,6 +27,20 @@ string intNaString (int liczbaZamienianaNaString) {
     string str=ss.str();
     return str;
 }
+void zapiszZaleznoscNumerIdANumerPozadkowy (map<string,int>&nrId_nrPozadkowy, vector<string>znajomi) {
+    nrId_nrPozadkowy.clear();
+    int iloscZnajomych=znajomi.size();
+    for (int i=0; i<iloscZnajomych; i++) {
+        int j=0;
+        string nrId;
+        string znajomy=znajomi[i];
+        while(znajomy[j]!='|') {
+            nrId+=znajomy[j];
+            j++;
+        }
+        nrId_nrPozadkowy[nrId]=i;
+    }
+}
 void podzialWpisuNaCzlony(string dzielonyNapis, vector<string>&podzielonyNapis) {
     char znakSeparujacy = '|';
     for(size_t p=0, q=0; p!=dzielonyNapis.npos; p=q) {
@@ -205,10 +219,11 @@ void zapisNowegoZnajomego(vector<string>& znajomi, string znajomy) {
         system("pause");
     }
 }
-void dodajZnajomego(vector<string>&znajomi) {
+void dodajZnajomego(vector<string>&znajomi, map<string,int>&nrId_nrPorzadkowy) {
     system("cls");
     int iloscZnajomych=znajomi.size();
     int idZnajomego;
+    int nrPorzadkowy=iloscZnajomych+1;
     string imie, nazwisko, numerTelefonu, email, adresZamieszkania;
     string znajomy;
     cout<<"Dodawanie nowej adresu do ksiazki adresowej."<<endl;
@@ -225,7 +240,9 @@ void dodajZnajomego(vector<string>&znajomi) {
     cin.sync();
     getline(cin, adresZamieszkania);
 
-    idZnajomego=iloscZnajomych+1;
+    map<string,int>::iterator itr=nrId_nrPorzadkowy.end();
+    itr--;
+    idZnajomego=stringNaInt(itr->first)+1;
 
     system("cls");
     cout<<"ID: "<<idZnajomego<<endl;
@@ -249,6 +266,7 @@ void dodajZnajomego(vector<string>&znajomi) {
         switch (wybor) {
         case't': {
             zapisNowegoZnajomego(znajomi, znajomy);
+            nrId_nrPorzadkowy[intNaString(idZnajomego)]=nrPorzadkowy;
             return;
         }
         break;
@@ -274,21 +292,21 @@ void odswiezZawartoscPliku (vector<string>znajomi) {
     }
     plik.close();
 }
-void edytowanieDanychZnajomego(vector<string>&znajomi) {
+void edytowanieDanychZnajomego(vector<string>&znajomi, map<string,int>nrId_NrPorzadkowy) {
     system("cls");
     vector<string>znajomy;
     cout<<"Podaj numer porzadkowy adresata: ";
-    int numerPorzadkowy;
-    cin>>numerPorzadkowy;
-    int iloscZnajomych=znajomi.size();
-    if (numerPorzadkowy>iloscZnajomych) {
+    string nrId;
+    cin>>nrId;
+    int nrPorzadkowy;
+    if (szukajWMapie(nrId_NrPorzadkowy, nrId, nrPorzadkowy)==false) {
         cout<<"Taki adresat nie istnieje."<<endl;
         Sleep(1000);
         cout<<"Powrot do glownego menu."<<endl;
         Sleep(2000);
         return;
     } else {
-        string szukanyZnajomy=znajomi[numerPorzadkowy-1];
+        string szukanyZnajomy=znajomi[nrPorzadkowy];
         podzialWpisuNaCzlony(szukanyZnajomy,znajomy);
 
         while(true) {
@@ -350,8 +368,8 @@ void edytowanieDanychZnajomego(vector<string>&znajomi) {
             break;
             case '6': {
                 string edytowanyZnajomy;
-                edytowanyZnajomy+=intNaString(numerPorzadkowy)+"|"+znajomy[1]+"|"+znajomy[2]+"|"+znajomy[3]+"|"+znajomy[4]+"|"+znajomy[5]+"|";
-                znajomi[numerPorzadkowy-1]=edytowanyZnajomy;
+                edytowanyZnajomy+=nrId+"|"+znajomy[1]+"|"+znajomy[2]+"|"+znajomy[3]+"|"+znajomy[4]+"|"+znajomy[5]+"|";
+                znajomi[nrPorzadkowy]=edytowanyZnajomy;
                 odswiezZawartoscPliku(znajomi);
                 return;
             }
@@ -364,42 +382,20 @@ void edytowanieDanychZnajomego(vector<string>&znajomi) {
         }
     }
 }
-void usuwanieIdZWektora(vector<string>znajomi, vector<string>&znajomiBezID) {
-    int iloscZnajomych=znajomi.size();
-    for(int i=0; i<iloscZnajomych; i++) {
-        string znajomy=znajomi[i];
-        int ileUsunac=0;
-        do {
-            ileUsunac++;
-        } while(znajomy[ileUsunac]!='|');
-        znajomy.erase(0,ileUsunac);
-        znajomiBezID.push_back(znajomy);
-    }
-}
-void ukladanieWetora (vector<string>&znajomi) {
-    vector<string>znajomiBezID;
-    usuwanieIdZWektora(znajomi,znajomiBezID);
-    int iloscZnajomych=znajomi.size();
-    for(int i=0; i<iloscZnajomych; i++) {
-        string znajomy;
-        znajomy+=intNaString(i+1)+znajomiBezID[i];
-        znajomi[i]=znajomy;
-    }
-}
-void usuwanieDanychOsoby(vector<string>&znajomi) {
+void usuwanieDanychOsoby(vector<string>&znajomi, map<string,int>&nrId_nrPorzadkowy) {
     system("cls");
-    int numerPorzadkowy;
+    string nrId;
     cout<<"Podaj numer porzadkowy adresata, ktorego dane chcesz usunac: ";
-    cin>>numerPorzadkowy;
-    int iloscZnajomych=znajomi.size();
-    if (numerPorzadkowy>iloscZnajomych) {
+    cin>>nrId;
+    int nrPorzadkowy;
+    if (szukajWMapie(nrId_nrPorzadkowy,nrId, nrPorzadkowy)==false) {
         cout<<"Taki adresat nie istnieje."<<endl;
         Sleep(1000);
         cout<<"Powrot do glownego menu."<<endl;
         Sleep(2000);
         return;
     } else {
-        wypiszDaneZnajomego(znajomi[numerPorzadkowy-1]);
+        wypiszDaneZnajomego(znajomi[nrPorzadkowy]);
 
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),10);
         cout<<"Czy na pewno chcesz usunac dane tego adresata?(t/n)"<<endl;
@@ -412,9 +408,9 @@ void usuwanieDanychOsoby(vector<string>&znajomi) {
 
             switch (wybor) {
             case 't': {
-                znajomi.erase(znajomi.begin()+numerPorzadkowy-1);
-                ukladanieWetora(znajomi);
+                znajomi.erase(znajomi.begin()+nrPorzadkowy);
                 odswiezZawartoscPliku(znajomi);
+                zapiszZaleznoscNumerIdANumerPozadkowy(nrId_nrPorzadkowy, znajomi);
                 cout<<"Dane adresata zostaly usuniete."<<endl;
                 Sleep(1000);
                 return;
@@ -430,7 +426,9 @@ void usuwanieDanychOsoby(vector<string>&znajomi) {
 }
 int main() {
     vector<string> znajomi;
+    map<string,int>numerId_numerPorzadkowy;
     wczytajZnajomychZPliku(znajomi);
+    zapiszZaleznoscNumerIdANumerPozadkowy(numerId_numerPorzadkowy,znajomi);
     char wybor;
 
     while(true) {
@@ -447,7 +445,7 @@ int main() {
 
         switch (wybor) {
         case'1': {
-            dodajZnajomego(znajomi);
+            dodajZnajomego(znajomi, numerId_numerPorzadkowy);
         }
         break;
         case'2': {
@@ -463,11 +461,11 @@ int main() {
         }
         break;
         case'5': {
-            edytowanieDanychZnajomego(znajomi);
+            edytowanieDanychZnajomego(znajomi, numerId_numerPorzadkowy);
         }
         break;
         case'6': {
-            usuwanieDanychOsoby(znajomi);
+            usuwanieDanychOsoby(znajomi,numerId_numerPorzadkowy);
         }
         break;
         case'9': {
