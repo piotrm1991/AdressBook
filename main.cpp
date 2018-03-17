@@ -1,9 +1,9 @@
 #include <iostream>
-#include "logowanie.h"
+#include "loggingMenu.h"
 
 using namespace std;
 
 int main() {
-    Logowanie l1;
+    Logging logging;
     return 0;
 }

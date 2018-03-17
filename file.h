@@ -4,9 +4,9 @@
 
 using namespace std;
 
-class Plik{
+class File{
 protected:
-    string nazwaPliku;
+    string nameFile;
 public:
-    void utworzPlikJesliTrzeba();
+    void creatFileIfNeeded();
 };
